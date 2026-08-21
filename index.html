@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Neon Arrows — CODE3B</title>
+<meta name="description" content="A directional-arrow escape puzzle for Android. Tap an arrow to send it off the board, but only if nothing stands in its way.">
+<style>
+  :root { color-scheme: dark; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0B0E13; color:#E8F1F8; line-height:1.6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    display:flex; flex-direction:column; min-height:100vh;
+  }
+  main { max-width:640px; margin:0 auto; padding:12vh 24px 6vh; flex:1; }
+  .the  { font-size:13px; letter-spacing:.5em; color:#6C7A8C; }
+  h1 { font-size:44px; letter-spacing:.14em; font-weight:800; margin-top:6px; }
+  h1 span:nth-child(1){color:#FFB03A} h1 span:nth-child(2){color:#FF8A5B}
+  h1 span:nth-child(3){color:#FF6B8A} h1 span:nth-child(4){color:#C86BFF}
+  .sub {
+    display:flex; align-items:center; gap:14px; margin-top:8px;
+    font-size:15px; letter-spacing:.4em; color:#E8F1F8;
+  }
+  .sub i { display:block; width:34px; height:6px; border-radius:6px; }
+  .sub .l{background:#3FA9FF} .sub .r{background:#FF6B8A}
+  .rule { margin-top:40px; font-size:19px; color:#C7D2DE; }
+  .rule b { color:#35E0A1; font-weight:600; }
+  ul { margin-top:28px; list-style:none; }
+  li { padding-left:22px; position:relative; color:#8C99A8; margin-bottom:8px; }
+  li::before { content:"→"; position:absolute; left:0; color:#35E0A1; }
+  .play {
+    display:inline-block; margin-top:36px; padding:15px 34px; border-radius:999px;
+    background:#35E0A1; color:#04120F; font-weight:800; text-decoration:none;
+    letter-spacing:.04em;
+  }
+  footer {
+    border-top:1px solid #1F2733; padding:26px 24px; text-align:center;
+    color:#55606E; font-size:14px;
+  }
+  footer a { color:#8C99A8; }
+  @media (max-width:520px) { main { padding-top:8vh } h1 { font-size:34px } }
+</style>
+</head>
+<body>
+  <main>
+    <div class="the">THE</div>
+    <h1><span>N</span><span>E</span><span>O</span><span>N</span></h1>
+    <div class="sub"><i class="l"></i>ARROWS<i class="r"></i></div>
+
+    <p class="rule">
+      Tap an arrow to send it off the board — but only if nothing stands in its
+      way. Clear every arrow to win. <b>Every level has a solution.</b>
+    </p>
+
+    <ul>
+      <li>200+ levels, grouped into chapters</li>
+      <li>A daily challenge — one board, everyone, every day</li>
+      <li>Weekly leaderboards and 18 achievements</li>
+      <li>Arrow skins and board themes to unlock</li>
+      <li>Plays fully offline</li>
+    </ul>
+
+    <a class="play" href="https://play.google.com/store/apps/details?id=com.code3b.theneonarrows">
+      GET IT ON GOOGLE PLAY
+    </a>
+  </main>
+
+  <footer>
+    CODE3B · <a href="mailto:codewith3b@gmail.com">codewith3b@gmail.com</a>
+    · <a href="./privacy/">Privacy &amp; Terms</a>
+  </footer>
+</body>
+</html>
