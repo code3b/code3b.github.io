@@ -40,9 +40,36 @@
   }
   footer a { color:#8C99A8; }
   @media (max-width:520px) { main { padding-top:8vh } h1 { font-size:34px } }
+  nav {
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:16px; padding:14px 24px;
+    background:rgba(11,14,19,.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid #1F2733;
+  }
+  nav .brand {
+    color:#E8F1F8; font-weight:800; letter-spacing:.22em; font-size:14px;
+    text-decoration:none;
+  }
+  nav .links { display:flex; gap:22px; }
+  nav .links a {
+    color:#8C99A8; text-decoration:none; font-size:14px;
+  }
+  nav .links a:hover { color:#E8F1F8; }
+  /* The current page is named but not a link to itself — a nav item that goes
+     nowhere is the one people click twice wondering why nothing happened. */
+  nav .links a[aria-current="page"] { color:#35E0A1; pointer-events:none; }
 </style>
 </head>
 <body>
+<nav>
+  <a class="brand" href="/">CODE3B</a>
+  <span class="links">
+    <a href="/" aria-current="page">Home</a>
+    <a href="/privacy/">Privacy &amp; Terms</a>
+  </span>
+</nav>
+
   <main>
     <div class="the">THE</div>
     <h1><span>N</span><span>E</span><span>O</span><span>N</span></h1>
