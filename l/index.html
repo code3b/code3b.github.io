@@ -124,14 +124,24 @@
   //
   // The level rides as ?id= rather than in the fragment, because the intent
   // syntax spends the fragment on itself. The app understands both.
-  var play = 'https://play.google.com/store/apps/details?id=com.code3b.theneonarrows';
+  // ⚠️ market:// rather than the https link. An https Play URL makes Android
+  // ask which app should open it -- browser or Play Store -- which is a chooser
+  // in the middle of installing a game somebody was just sent. market:// is
+  // claimed only by the Play Store, so there is nothing to choose between.
+  //
+  // The https form stays as the visible button's href for anybody on a desktop,
+  // where market:// resolves to nothing at all.
+  var web = 'https://play.google.com/store/apps/details?id=com.code3b.theneonarrows';
+  var play = 'market://details?id=com.code3b.theneonarrows';
   if (fragment.length <= 100) {
     // Play's referrer is capped at 100 characters, so a whole board in the link
     // is far too long for it. A short id fits, which is one more reason
     // publishing beats packing the board into the URL.
-    play += '&referrer=' + encodeURIComponent('level=' + fragment);
+    var referrer = '&referrer=' + encodeURIComponent('level=' + fragment);
+    play += referrer;
+    web += referrer;
   }
-  get.href = play;
+  get.href = /android/i.test(navigator.userAgent) ? play : web;
 
   var deepLink =
     'intent://code3b.github.io/l/?id=' + encodeURIComponent(fragment) +
