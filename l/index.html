@@ -98,7 +98,7 @@
      href="https://play.google.com/store/apps/details?id=com.code3b.theneonarrows">
     GET THE GAME
   </a>
-  <a class="open hidden" id="open" href="#">Already installed? Open it here.</a>
+  <a class="open hidden" id="open" href="#">Open it in the game</a>
 
   <code id="fallback" class="hidden"></code>
 </main>
@@ -115,37 +115,40 @@
     return;
   }
 
-  // Carried through to the store link, so installing and then opening the link
-  // again is one tap rather than a hunt back through the chat.
+  // ⚠️ **An intent link, and this is what fixes "it goes to the store even
+  // though I have the game".** Until assetlinks.json is published, Android has
+  // not verified this domain, so a tap opens the browser and lands here even on
+  // a phone with the app installed. An intent:// URL is the one thing a web page
+  // can do about that: Chrome hands off to the named package if it is there, and
+  // follows browser_fallback_url if it is not.
   //
-  // Play's referrer is capped at 100 characters, so a level that travels in the
-  // link whole is far too long for it. A short id fits, which is one more reason
-  // publishing beats packing the board into the URL.
+  // The level rides as ?id= rather than in the fragment, because the intent
+  // syntax spends the fragment on itself. The app understands both.
+  var play = 'https://play.google.com/store/apps/details?id=com.code3b.theneonarrows';
   if (fragment.length <= 100) {
-    get.href += '&referrer=' + encodeURIComponent('level=' + fragment);
+    // Play's referrer is capped at 100 characters, so a whole board in the link
+    // is far too long for it. A short id fits, which is one more reason
+    // publishing beats packing the board into the URL.
+    play += '&referrer=' + encodeURIComponent('level=' + fragment);
   }
+  get.href = play;
 
-  // The app claims this URL, so this link re-triggers the intent. On a phone
-  // where Android has verified the link the game will already have opened and
-  // nobody sees this page at all.
-  open.href = location.href;
+  var deepLink =
+    'intent://code3b.github.io/l/?id=' + encodeURIComponent(fragment) +
+    '#Intent;scheme=https;package=com.code3b.theneonarrows;' +
+    'S.browser_fallback_url=' + encodeURIComponent(play) + ';end';
+
+  open.href = deepLink;
+  open.textContent = 'Open it in the game';
   open.classList.remove('hidden');
 
-  // Sent to the store on their own, after a beat.
-  //
-  // The beat matters. Somebody arriving here on a phone that *does* have the
-  // game may still be mid-handoff, and redirecting instantly would race the app
-  // opening and drop them in the store instead. A second and a half is long
-  // enough for that to settle and short enough that nobody is left reading.
-  //
-  // Only on Android: there is nothing to install on a desktop, and sending
-  // somebody there is a dead end with a QR code at the end of it.
+  // ⚠️ **Try the app first, and never redirect straight to the store.** The
+  // first version sent every Android visitor to Play after a beat, which is
+  // exactly the reported bug: somebody who already had the game was pushed to
+  // its store page instead of into it. The intent link cannot make that mistake
+  // -- Chrome only follows the fallback when the package is genuinely absent.
   if (/android/i.test(navigator.userAgent)) {
-    setTimeout(function () {
-      // replace, not assign: back from the store should return to whatever they
-      // were doing, not to this page, which would send them straight back.
-      location.replace(get.href);
-    }, 1500);
+    setTimeout(function () { location.replace(deepLink); }, 1200);
   }
 
   // Shown last and quietly: on a desktop there is nothing to open, and the code
