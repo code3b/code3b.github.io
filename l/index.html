@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!--
+  The page a shared level link lands on.
+
+  Copy this to the site repository (code3b/code3b.github.io) as /l/index.html.
+  It is kept here because it is part of the sharing design, and the design is
+  only correct if the app, the link format and this page agree.
+
+  WHAT IT IS FOR
+  The app claims https://code3b.github.io/l/ with an intent filter, so on a phone
+  with the game installed this page is usually never seen: Android opens the game
+  instead. It exists for everybody else -- somebody on a desktop, somebody
+  without the game, or somebody whose Android has not verified the link yet.
+
+  WHY THE LEVEL IS AFTER THE '#'
+  A fragment is never sent to the server. GitHub Pages never sees which level was
+  shared, and this page cannot leak it. It is also the reason a level can travel
+  in the link at all with no backend: the app reads the fragment out of the
+  intent, which the browser cannot do for us.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A level in The Neon Arrows</title>
+<meta name="description" content="Somebody built you a level. Clear every arrow.">
+<style>
+  :root {
+    --bg: #0b0d10;
+    --raised: #151a20;
+    --ink: #e8edf2;
+    --muted: #8b97a5;
+    --accent: #8ef04f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    text-align: center;
+  }
+  main { max-width: 420px; width: 100%; }
+  h1 { font-size: 22px; margin: 0 0 8px; letter-spacing: .01em; }
+  p { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0 0 20px; }
+  .board {
+    width: 168px; height: 168px;
+    margin: 0 auto 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .cell { background: var(--raised); border-radius: 8px; }
+  .get {
+    display: inline-block;
+    padding: 14px 28px;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .open { display: block; margin-top: 16px; color: var(--muted); font-size: 13px; }
+  code {
+    display: block;
+    margin-top: 28px;
+    padding: 10px;
+    background: var(--raised);
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    word-break: break-all;
+  }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="board" aria-hidden="true">
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+  </div>
+
+  <h1>Somebody built you a level</h1>
+  <p id="blurb">
+    Clear every arrow &mdash; but an arrow can only leave if nothing is in its way.
+  </p>
+
+  <a class="get" id="get"
+     href="https://play.google.com/store/apps/details?id=com.code3b.theneonarrows">
+    GET THE GAME
+  </a>
+  <a class="open hidden" id="open" href="#">Already installed? Open it here.</a>
+
+  <code id="fallback" class="hidden"></code>
+</main>
+
+<script>
+(function () {
+  var fragment = (location.hash || '').replace(/^#/, '').trim();
+  var get = document.getElementById('get');
+  var open = document.getElementById('open');
+
+  if (!fragment) {
+    document.getElementById('blurb').textContent =
+      'This link is missing its level. Ask whoever sent it to share it again.';
+    return;
+  }
+
+  // Carried through to the store link, so installing and then opening the link
+  // again is one tap rather than a hunt back through the chat.
+  //
+  // Play's referrer is capped at 100 characters, so a level that travels in the
+  // link whole is far too long for it. A short id fits, which is one more reason
+  // publishing beats packing the board into the URL.
+  if (fragment.length <= 100) {
+    get.href += '&referrer=' + encodeURIComponent('level=' + fragment);
+  }
+
+  // The app claims this URL, so this link re-triggers the intent. On a phone
+  // where Android has verified the link the game will already have opened and
+  // nobody sees this page at all.
+  open.href = location.href;
+  open.classList.remove('hidden');
+
+  // Sent to the store on their own, after a beat.
+  //
+  // The beat matters. Somebody arriving here on a phone that *does* have the
+  // game may still be mid-handoff, and redirecting instantly would race the app
+  // opening and drop them in the store instead. A second and a half is long
+  // enough for that to settle and short enough that nobody is left reading.
+  //
+  // Only on Android: there is nothing to install on a desktop, and sending
+  // somebody there is a dead end with a QR code at the end of it.
+  if (/android/i.test(navigator.userAgent)) {
+    setTimeout(function () {
+      // replace, not assign: back from the store should return to whatever they
+      // were doing, not to this page, which would send them straight back.
+      location.replace(get.href);
+    }, 1500);
+  }
+
+  // Shown last and quietly: on a desktop there is nothing to open, and the code
+  // is the only thing that survives being copied to a phone by hand.
+  var fallback = document.getElementById('fallback');
+  fallback.textContent = fragment;
+  fallback.classList.remove('hidden');
+}());
+</script>
+</body>
+</html>
