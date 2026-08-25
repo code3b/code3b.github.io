@@ -151,13 +151,15 @@
   //
   // The level rides as ?id= rather than in the fragment, because the intent
   // syntax spends the fragment on itself. The app understands both.
-  // ⚠️ market:// rather than the https link. An https Play URL makes Android
-  // ask which app should open it -- browser or Play Store -- which is a chooser
-  // in the middle of installing a game somebody was just sent. market:// is
-  // claimed only by the Play Store, so there is nothing to choose between.
+  // ⚠️ market:// for the visible button, https for the fallback, and the
+  // difference is not cosmetic. A tap on market:// opens the Play app with no
+  // chooser, which is what somebody pressing GET THE GAME should get. But Chrome
+  // accepts only http or https in browser_fallback_url and ignores the rest, so
+  // the automatic hand-off has to use the https form or it does not happen at
+  // all -- which is what it was doing.
   //
-  // The https form stays as the visible button's href for anybody on a desktop,
-  // where market:// resolves to nothing at all.
+  // The https form is also the desktop button, where market:// resolves to
+  // nothing.
   var web = 'https://play.google.com/store/apps/details?id=com.code3b.theneonarrows';
   var play = 'market://details?id=com.code3b.theneonarrows';
   if (fragment.length <= 100) {
@@ -173,7 +175,15 @@
   var deepLink =
     'intent://code3b.github.io/l/?id=' + encodeURIComponent(fragment) +
     '#Intent;scheme=https;package=com.code3b.theneonarrows;' +
-    'S.browser_fallback_url=' + encodeURIComponent(play) + ';end';
+    // ⚠️ **The https Play URL, never market://.** Chrome accepts only http or
+    // https in browser_fallback_url and silently ignores anything else -- so a
+    // market:// fallback meant that somebody without the game tapped a level
+    // link, landed here, and stayed here. Nothing opened, and nothing said why.
+    //
+    // The referrer rides along, which is the point of using a URL at all rather
+    // than letting Chrome fall back to the store on its own: without it the
+    // level is forgotten during the install and the game opens on level one.
+    'S.browser_fallback_url=' + encodeURIComponent(web) + ';end';
 
   open.href = deepLink;
   open.textContent = 'Open it in the game';
